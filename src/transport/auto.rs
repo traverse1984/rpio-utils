@@ -1,24 +1,24 @@
 use super::{
     error::Error,
-    traits::{AutoSelect, ByteTransport, ClockSpeed, Result},
+    traits::{ByteTransport, ClockSpeed, Result},
 };
 use embedded_hal::blocking::spi::Transfer;
 
 #[cfg(feature = "rppal")]
 use _rppal::spi::Spi;
 
+/// Construct a [`ByteTransport`] from an SPI device. The device must manage
+/// chip selection and deselection.
 pub struct Transport<SPI> {
     spi: SPI,
 }
 
-#[cfg(feature = "hal")]
 impl<SPI: Transfer<u8>> Transport<SPI> {
     pub fn new(spi: SPI) -> Self {
         Self { spi }
     }
 }
 
-#[cfg(feature = "hal")]
 impl<SPI: Transfer<u8>> Transfer<u8> for Transport<SPI> {
     type Error = Error;
 
@@ -27,11 +27,7 @@ impl<SPI: Transfer<u8>> Transfer<u8> for Transport<SPI> {
     }
 }
 
-#[cfg(feature = "hal")]
 impl<SPI: Transfer<u8>> ByteTransport for Transport<SPI> {}
-
-#[cfg(feature = "hal")]
-impl<SPI: Transfer<u8>> AutoSelect for Transport<SPI> {}
 
 #[cfg(feature = "rppal")]
 impl ClockSpeed for Transport<Spi> {

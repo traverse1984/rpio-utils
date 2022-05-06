@@ -1,17 +1,15 @@
-use super::{
-    error::PinError,
-    intercept::{Pin, PinOpts},
-};
+use super::intercept::{Pin, PinOpts};
 use embedded_hal::digital::v2::OutputPin as HalOutputPin;
 use std::{borrow::ToOwned, cell::RefCell, rc::Rc, string::String, thread, time::Duration};
 
+/// State interface for mock output pin.
 #[derive(Debug)]
 pub struct MockPin {
     dev: Rc<RefCell<MockPinDevice>>,
 }
 
 impl MockPin {
-    pub fn new(dev: Rc<RefCell<MockPinDevice>>) -> Self {
+    fn new(dev: Rc<RefCell<MockPinDevice>>) -> Self {
         Self { dev }
     }
 }
@@ -32,6 +30,14 @@ impl HalOutputPin for MockPin {
     }
 }
 
+/// An enum of mock output pin errors.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PinError {
+    SetHigh,
+    SetLow,
+}
+
+/// Holds the underlying state shared by [MockPin] and [PinControl].
 #[derive(Debug)]
 pub struct MockPinDevice {
     opts: Rc<RefCell<PinOpts>>,
@@ -41,7 +47,7 @@ pub struct MockPinDevice {
 }
 
 impl MockPinDevice {
-    pub fn new(opts: Rc<RefCell<PinOpts>>) -> Self {
+    fn new(opts: Rc<RefCell<PinOpts>>) -> Self {
         Self {
             opts,
             value: true,
@@ -65,36 +71,43 @@ impl MockPinDevice {
     }
 }
 
+/// Developer controls for mock output pin.
 #[derive(Debug)]
 pub struct PinControl {
     pin: Rc<RefCell<MockPinDevice>>,
 }
 
 impl PinControl {
-    pub fn new(pin: Rc<RefCell<MockPinDevice>>) -> Self {
+    fn new(pin: Rc<RefCell<MockPinDevice>>) -> Self {
         Self { pin }
     }
 
+    /// Set whether events are printed to stdout.
     pub fn set_log(&mut self, log: bool) {
         self.pin.borrow_mut().opts.borrow_mut().log = log;
     }
 
+    /// Set the time delay for state change calls.
     pub fn set_delay(&mut self, duration: Duration) {
         self.pin.borrow_mut().delay = Some(duration);
     }
 
+    /// Clear the time delay for state change calls.
     pub fn clear_delay(&mut self) {
         self.pin.borrow_mut().delay = None;
     }
 
+    /// Set a mock error. The next time this error could occur - it does.
     pub fn set_error(&mut self, error: PinError) {
         self.pin.borrow_mut().error = Some(error);
     }
 
+    /// Clear the mock error (if set).
     pub fn clear_error(&mut self) {
         self.pin.borrow_mut().error = None;
     }
 
+    /// Get the current value of the pin (as bool).
     pub fn get_value(&self) -> bool {
         self.pin.borrow().value
     }
@@ -105,11 +118,13 @@ builder!(mock => MockBuilder<PinOpts> + Clone, Debug {
 });
 
 impl MockBuilder {
+    /// Introduce a time delay for state change calls.
     pub fn with_delay(mut self, delay: Duration) -> Self {
         self.delay.replace(delay);
         self
     }
 
+    /// Create the mock output pin and controller.
     pub fn init(self) -> (Pin<MockPin>, PinControl) {
         let opts = Rc::new(RefCell::new(self.opts));
         let dev = Rc::new(RefCell::new(MockPinDevice::new(opts.clone())));

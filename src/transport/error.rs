@@ -1,3 +1,11 @@
+/// Indicates an SPI error. The [`ByteTransport`](super::traits::ByteTransport)
+/// in use determines which errors are possible. Of the built-in transports:
+///
+/// - Any transport can encounter [Transfer](Error::Transfer).
+/// - Implementors of [`ChipSelect`](super::traits::ChipSelect) can encounter
+///   [ChipSelect](Error::ChipSelect) and [ChipDeselect](Error::ChipDeselect).
+/// - Implementors of [`ClockSpeed`](super::traits::ClockSpeed) can encounter
+///   [ClockSpeed](Error::ClockSpeed).
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Error {
     Transfer,

@@ -1,8 +1,9 @@
-use super::mock::MockPin;
 use embedded_hal::digital::v2::OutputPin as HalOutputPin;
 use std::{borrow::ToOwned, cell::RefCell, println, rc::Rc, string::String};
 
-pub struct Pin<P: HalOutputPin = MockPin> {
+/// Intercepting output pin. Adds logging capabilities to an underlying struct
+/// which implements [`OutputPin`](HalOutputPin).
+pub struct Pin<P: HalOutputPin> {
     name: String,
     pin: P,
     opts: Rc<RefCell<PinOpts>>,
@@ -13,6 +14,7 @@ impl<P: HalOutputPin> Pin<P> {
         Self { name, pin, opts }
     }
 
+    /// Set whether events are printed to stdout.
     pub fn set_log(&mut self, log: bool) {
         self.opts.borrow_mut().log = log;
     }
@@ -48,6 +50,7 @@ impl<P: HalOutputPin> HalOutputPin for Pin<P> {
     }
 }
 
+/// Options for constructing an output pin intercept.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct PinOpts {
     pub log: bool,

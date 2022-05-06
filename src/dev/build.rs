@@ -22,6 +22,7 @@ macro_rules! builder {
                 }
             }
 
+            /// Do not print events to stdout.
             pub fn without_log(mut self) -> Self {
                 self.opts.log = false;
                 self
