@@ -1,0 +1,15 @@
+[package]
+name = "rpio-utils"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+embedded-hal = "0.2.7"
+_rppal = { package = "rppal", version = "0.13.1", features = ["hal"], optional = true }
+
+[features]
+default = ["dev"]
+std = []
+hal = []
+dev = ["std", "hal"]
+rppal = ["hal", "dep:_rppal"]
