@@ -62,7 +62,7 @@ impl PinOpts {
     }
 }
 
-builder!(intercept => InterceptBuilder<PinOpts> + Clone, Debug {});
+builder!(InterceptBuilder<PinOpts> + Clone, Debug {});
 
 impl InterceptBuilder {
     pub fn init<P: HalOutputPin>(self, pin: P) -> Pin<P> {

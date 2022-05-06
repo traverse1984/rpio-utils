@@ -71,7 +71,7 @@ impl SpiOpts {
     }
 }
 
-builder!(intercept => InterceptBuilder<SpiOpts> + Debug, Clone {});
+builder!(InterceptBuilder<SpiOpts> + Debug, Clone {});
 
 impl InterceptBuilder {
     pub fn with_byte_log(mut self) -> Self {

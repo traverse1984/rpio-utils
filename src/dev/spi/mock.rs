@@ -109,59 +109,69 @@ impl SpiControl {
     }
 
     /// Set whether events are printed to stdout.
-    pub fn set_log(&mut self, log: bool) {
+    pub fn set_log(&self, log: bool) -> &Self {
         self.spi.borrow_mut().opts.borrow_mut().log = log;
+        self
     }
 
     /// Set whether Tx/Rx bytes are printed after transfer.
-    pub fn set_log_bytes(&mut self, bytes: bool) {
+    pub fn set_log_bytes(&self, bytes: bool) -> &Self {
         self.spi.borrow_mut().opts.borrow_mut().bytes = bytes;
+        self
     }
 
     /// Use this function to provide Rx bytes.
-    pub fn set_generator(&mut self, generator: Generator) {
+    pub fn set_generator(&self, generator: Generator) -> &Self {
         self.spi.borrow_mut().generator = Some(Box::new(generator));
+        self
     }
 
     /// Use this boxed function to provide Rx bytes.
-    pub fn set_boxed_generator(&mut self, generator: BoxedGenerator) {
+    pub fn set_boxed_generator(&self, generator: BoxedGenerator) -> &Self {
         self.spi.borrow_mut().generator = Some(generator);
+        self
     }
 
     /// Clear the Rx byte generator function (if set).
-    pub fn clear_generator(&mut self) {
+    pub fn clear_generator(&self) -> &Self {
         self.spi.borrow_mut().generator = None;
+        self
     }
 
     /// Set the per-byte time delay for transfers.
-    pub fn set_byte_delay(&mut self, duration: Duration) {
+    pub fn set_byte_delay(&self, duration: Duration) -> &Self {
         self.spi.borrow_mut().byte_delay = Some(duration);
+        self
     }
 
     /// Remove the per-byte time delay (if set).
-    pub fn clear_byte_delay(&mut self) {
+    pub fn clear_byte_delay(&self) -> &Self {
         self.spi.borrow_mut().byte_delay = None;
+        self
     }
 
     /// Set a mock error. The next time this error could occur - it does.
     /// The error may deferred with `set_error_defer_bytes`.
-    pub fn set_error(&mut self, error: SpiError) {
+    pub fn set_error(&self, error: SpiError) -> &Self {
         self.spi.borrow_mut().error = Some(error);
+        self
     }
 
     /// Set a byte counter to defer mock errors. Until that many bytes have
     /// been transferred, mock errors will not occur.
-    pub fn set_error_defer_bytes(&mut self, defer: usize) {
+    pub fn set_error_defer_bytes(&self, defer: usize) -> &Self {
         self.spi.borrow_mut().error_after_bytes = defer;
+        self
     }
 
     /// Clears the mock error (if set).
-    pub fn clear_error(&mut self) {
+    pub fn clear_error(&self) -> &Self {
         self.spi.borrow_mut().error = None;
+        self
     }
 }
 
-builder!(mock => MockBuilder<SpiOpts> + Debug {
+builder!(MockBuilder<SpiOpts> + Debug {
     byte_delay: Option<Duration> = None,
     generator: Option<BoxedGenerator> = None,
 });
@@ -196,7 +206,7 @@ impl MockBuilder {
     pub fn init(self) -> (Spi<MockSpi>, SpiControl) {
         let opts = Rc::new(RefCell::new(self.opts));
         let dev = Rc::new(RefCell::new(MockSpiDevice::new(opts.clone())));
-        let mut control = SpiControl::new(dev.clone());
+        let control = SpiControl::new(dev.clone());
         let pin = Spi::new(self.name, MockSpi::new(dev), opts);
 
         if let Some(delay) = self.byte_delay {

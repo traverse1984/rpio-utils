@@ -83,28 +83,33 @@ impl PinControl {
     }
 
     /// Set whether events are printed to stdout.
-    pub fn set_log(&mut self, log: bool) {
+    pub fn set_log(&self, log: bool) -> &Self {
         self.pin.borrow_mut().opts.borrow_mut().log = log;
+        self
     }
 
     /// Set the time delay for state change calls.
-    pub fn set_delay(&mut self, duration: Duration) {
+    pub fn set_delay(&self, duration: Duration) -> &Self {
         self.pin.borrow_mut().delay = Some(duration);
+        self
     }
 
     /// Clear the time delay for state change calls.
-    pub fn clear_delay(&mut self) {
+    pub fn clear_delay(&self) -> &Self {
         self.pin.borrow_mut().delay = None;
+        self
     }
 
     /// Set a mock error. The next time this error could occur - it does.
-    pub fn set_error(&mut self, error: PinError) {
+    pub fn set_error(&self, error: PinError) -> &Self {
         self.pin.borrow_mut().error = Some(error);
+        self
     }
 
     /// Clear the mock error (if set).
-    pub fn clear_error(&mut self) {
+    pub fn clear_error(&self) -> &Self {
         self.pin.borrow_mut().error = None;
+        self
     }
 
     /// Get the current value of the pin (as bool).
@@ -113,7 +118,7 @@ impl PinControl {
     }
 }
 
-builder!(mock => MockBuilder<PinOpts> + Clone, Debug {
+builder!(MockBuilder<PinOpts> + Clone, Debug {
     delay: Option<Duration> = None,
 });
 
@@ -128,7 +133,7 @@ impl MockBuilder {
     pub fn init(self) -> (Pin<MockPin>, PinControl) {
         let opts = Rc::new(RefCell::new(self.opts));
         let dev = Rc::new(RefCell::new(MockPinDevice::new(opts.clone())));
-        let mut control = PinControl::new(dev.clone());
+        let control = PinControl::new(dev.clone());
         let pin = Pin::new(self.name, MockPin::new(dev), opts);
 
         if let Some(delay) = self.delay {

@@ -1,3 +1,4 @@
+mod builder;
 mod error;
 mod traits;
 
@@ -6,6 +7,8 @@ pub mod auto;
 
 /// [`ByteTransport`] for SPI devices which require a chip select controller.
 pub mod cs;
+
+pub use builder::Transport;
 
 pub use {
     error::Error,
