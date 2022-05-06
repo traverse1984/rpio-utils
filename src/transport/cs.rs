@@ -1,6 +1,6 @@
 use super::{
     error::Error,
-    traits::{ChipSelect, ClockSpeed, Result},
+    traits::{ByteTransport, ChipSelect, ClockSpeed, Result},
 };
 
 use embedded_hal::{blocking::spi::Transfer, digital::v2::OutputPin, spi::Polarity};
@@ -25,6 +25,20 @@ impl<SPI: Transfer<u8>, CS: OutputPin> Transport<SPI, CS> {
 }
 
 #[cfg(feature = "hal")]
+impl<SPI: Transfer<u8>, CS: OutputPin> Transfer<u8> for Transport<SPI, CS> {
+    type Error = Error;
+
+    fn transfer<'w>(&mut self, words: &'w mut [u8]) -> Result<&'w [u8]> {
+        self.select()
+            .and_then(|_| self.transfer_or_deselect(words))
+            .and_then(|res| self.deselect().and(Ok(res)))
+    }
+}
+
+#[cfg(feature = "hal")]
+impl<SPI: Transfer<u8>, CS: OutputPin> ByteTransport for Transport<SPI, CS> {}
+
+#[cfg(feature = "hal")]
 impl<SPI: Transfer<u8>, CS: OutputPin> ChipSelect for Transport<SPI, CS> {
     fn select(&mut self) -> Result {
         match self.polarity {
@@ -47,17 +61,6 @@ impl<SPI: Transfer<u8>, CS: OutputPin> ChipSelect for Transport<SPI, CS> {
             self.deselect()
                 .map_or(Error::ChipDeselect, |_| Error::Transfer)
         })
-    }
-}
-
-#[cfg(feature = "hal")]
-impl<SPI: Transfer<u8>, CS: OutputPin> Transfer<u8> for Transport<SPI, CS> {
-    type Error = Error;
-
-    fn transfer<'w>(&mut self, words: &'w mut [u8]) -> Result<&'w [u8]> {
-        self.select()
-            .and_then(|_| self.transfer_or_deselect(words))
-            .and_then(|res| self.deselect().and(Ok(res)))
     }
 }
 

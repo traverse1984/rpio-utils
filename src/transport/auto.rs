@@ -1,6 +1,6 @@
 use super::{
     error::Error,
-    traits::{AutoSelect, ClockSpeed, Result},
+    traits::{AutoSelect, ByteTransport, ClockSpeed, Result},
 };
 use embedded_hal::blocking::spi::Transfer;
 
@@ -19,9 +19,6 @@ impl<SPI: Transfer<u8>> Transport<SPI> {
 }
 
 #[cfg(feature = "hal")]
-impl<SPI: Transfer<u8>> AutoSelect for Transport<SPI> {}
-
-#[cfg(feature = "hal")]
 impl<SPI: Transfer<u8>> Transfer<u8> for Transport<SPI> {
     type Error = Error;
 
@@ -29,6 +26,12 @@ impl<SPI: Transfer<u8>> Transfer<u8> for Transport<SPI> {
         self.spi.transfer(words).or(Err(Error::Transfer))
     }
 }
+
+#[cfg(feature = "hal")]
+impl<SPI: Transfer<u8>> ByteTransport for Transport<SPI> {}
+
+#[cfg(feature = "hal")]
+impl<SPI: Transfer<u8>> AutoSelect for Transport<SPI> {}
 
 #[cfg(feature = "rppal")]
 impl ClockSpeed for Transport<Spi> {
