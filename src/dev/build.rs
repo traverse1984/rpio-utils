@@ -1,4 +1,3 @@
-#[macro_export]
 macro_rules! builder {
     ($fn: ident => $builder: ident <$opts: ty> + $($derives: ident),+ {
         $($field: ident : $type: ty = $val: expr),* $(,)?
