@@ -1,12 +1,12 @@
-use super::{output_pin, spi};
+use super::{output, spi};
 
 /// Create a mock device
 #[derive(Debug)]
 pub struct Mock;
 
 impl Mock {
-    pub fn output_pin(name: &str) -> output_pin::mock::MockBuilder {
-        output_pin::mock::MockBuilder::new(name)
+    pub fn pin(name: &str) -> output::mock::MockBuilder {
+        output::mock::MockBuilder::new(name)
     }
 
     pub fn spi(name: &str) -> spi::mock::MockBuilder {
@@ -19,8 +19,8 @@ impl Mock {
 pub struct Intercept;
 
 impl Intercept {
-    pub fn output_pin(name: &str) -> output_pin::intercept::InterceptBuilder {
-        output_pin::intercept::InterceptBuilder::new(name)
+    pub fn pin(name: &str) -> output::intercept::InterceptBuilder {
+        output::intercept::InterceptBuilder::new(name)
     }
 
     pub fn spi(name: &str) -> spi::intercept::InterceptBuilder {

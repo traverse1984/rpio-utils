@@ -10,6 +10,5 @@ _rppal = { package = "rppal", version = "0.13.1", features = ["hal"], optional =
 [features]
 default = ["dev"]
 std = []
-hal = []
-dev = ["std", "hal"]
-rppal = ["hal", "dep:_rppal"]
+dev = ["std"]
+rppal = ["dep:_rppal"]

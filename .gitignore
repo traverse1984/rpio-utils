@@ -3,3 +3,4 @@ Cargo.lock
 .vscode
 .cargo
 notes.txt
+src/test

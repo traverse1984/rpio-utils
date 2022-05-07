@@ -1,8 +1,7 @@
 use embedded_hal::blocking::spi::Transfer;
 use std::{borrow::ToOwned, cell::RefCell, format, println, rc::Rc, string::String, vec::Vec};
 
-/// Intercepting SPI. Adds logging capabilities to an underlying struct which
-/// implements [`Transfer`].
+/// Intercepts [`Transfer<u8>`](Transfer), providing logging capabilities.
 #[derive(Debug)]
 pub struct Spi<S: Transfer<u8>> {
     name: String,
@@ -16,12 +15,12 @@ impl<S: Transfer<u8>> Spi<S> {
     }
 
     /// Set whether events are printed to stdout.
-    pub fn set_log(&mut self, log: bool) {
+    pub fn set_log(&self, log: bool) {
         self.opts.borrow_mut().log = log;
     }
 
-    /// Set whether Tx/Rx bytes are printed after transfer.
-    pub fn set_log_bytes(&mut self, bytes: bool) {
+    /// Set whether Tx/Rx bytes are printed (when logging is enabled).
+    pub fn set_log_bytes(&self, bytes: bool) {
         self.opts.borrow_mut().bytes = bytes;
     }
 }

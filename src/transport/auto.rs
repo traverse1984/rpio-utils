@@ -7,7 +7,7 @@ use embedded_hal::blocking::spi::Transfer;
 #[cfg(feature = "rppal")]
 use _rppal::spi::Spi;
 
-/// Construct a [`ByteTransport`] from an SPI device. The device must manage
+/// Construct a [`Transport`] from an SPI device. The device must manage
 /// chip selection and deselection.
 pub struct Transport<SPI> {
     spi: SPI,

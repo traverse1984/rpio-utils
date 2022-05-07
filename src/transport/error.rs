@@ -1,4 +1,4 @@
-/// Indicates an SPI error. The [`ByteTransport`](super::traits::ByteTransport)
+/// Indicates an SPI error. The [`Transport`](super::traits::Transport)
 /// in use determines which errors are possible. Of the built-in transports:
 ///
 /// - Any transport can encounter [Transfer](Error::Transfer).

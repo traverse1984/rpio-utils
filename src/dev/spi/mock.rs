@@ -5,23 +5,6 @@ use std::{
     time::Duration, vec::Vec,
 };
 
-/// Indicates that the function can be used to generate bytes for mock SPI.
-pub trait ByteGenerator: Fn(&[u8]) -> Vec<u8> {}
-
-/// A boxed byte generator for mock SPI
-pub type BoxedGenerator = Box<dyn ByteGenerator>;
-
-/// A byte generator for mock SPI
-pub type Generator = fn(&[u8]) -> Vec<u8>;
-
-impl ByteGenerator for fn(&[u8]) -> Vec<u8> {}
-
-impl fmt::Debug for dyn ByteGenerator {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Function (Byte Generator)")
-    }
-}
-
 /// Transfer interface for Mock SPI.
 #[derive(Debug)]
 pub struct MockSpi {
@@ -45,6 +28,23 @@ impl Transfer<u8> for MockSpi {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SpiError {
     Transfer,
+}
+
+/// Indicates that the function can be used to generate bytes for mock SPI.
+pub trait ByteGenerator: Fn(&[u8]) -> Vec<u8> {}
+
+/// A boxed byte generator for mock SPI
+pub type BoxedGenerator = Box<dyn ByteGenerator>;
+
+/// A byte generator for mock SPI
+pub type Generator = fn(&[u8]) -> Vec<u8>;
+
+impl ByteGenerator for fn(&[u8]) -> Vec<u8> {}
+
+impl fmt::Debug for dyn ByteGenerator {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Function (Byte Generator)")
+    }
 }
 
 /// Holds the underlying state shared by a [MockSpi] and an [SpiControl].
@@ -114,7 +114,7 @@ impl SpiControl {
         self
     }
 
-    /// Set whether Tx/Rx bytes are printed after transfer.
+    /// Set whether Tx/Rx bytes are printed to stdout (when logging is enabled).
     pub fn set_log_bytes(&self, bytes: bool) -> &Self {
         self.spi.borrow_mut().opts.borrow_mut().bytes = bytes;
         self
@@ -177,7 +177,7 @@ builder!(MockBuilder<SpiOpts> + Debug {
 });
 
 impl MockBuilder {
-    /// Print Tx/Rx to stdout after transfer.
+    /// Print Tx/Rx bytes to stdout after transfer.
     pub fn with_byte_log(mut self) -> Self {
         self.opts.log = true;
         self.opts.bytes = true;

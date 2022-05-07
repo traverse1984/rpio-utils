@@ -1,15 +1,14 @@
-use embedded_hal::digital::v2::OutputPin as HalOutputPin;
+use embedded_hal::digital::v2::OutputPin;
 use std::{borrow::ToOwned, cell::RefCell, println, rc::Rc, string::String};
 
-/// Intercepting output pin. Adds logging capabilities to an underlying struct
-/// which implements [`OutputPin`](HalOutputPin).
-pub struct Pin<P: HalOutputPin> {
+/// Intercepts [`OutputPin`](OutputPin), providing logging.
+pub struct Pin<P: OutputPin> {
     name: String,
     pin: P,
     opts: Rc<RefCell<PinOpts>>,
 }
 
-impl<P: HalOutputPin> Pin<P> {
+impl<P: OutputPin> Pin<P> {
     pub fn new(name: String, pin: P, opts: Rc<RefCell<PinOpts>>) -> Self {
         Self { name, pin, opts }
     }
@@ -20,7 +19,7 @@ impl<P: HalOutputPin> Pin<P> {
     }
 }
 
-impl<P: HalOutputPin> HalOutputPin for Pin<P> {
+impl<P: OutputPin> OutputPin for Pin<P> {
     type Error = P::Error;
 
     fn set_high(&mut self) -> Result<(), Self::Error> {
@@ -65,7 +64,7 @@ impl PinOpts {
 builder!(InterceptBuilder<PinOpts> + Clone, Debug {});
 
 impl InterceptBuilder {
-    pub fn init<P: HalOutputPin>(self, pin: P) -> Pin<P> {
+    pub fn init<P: OutputPin>(self, pin: P) -> Pin<P> {
         Pin::new(self.name, pin, Rc::new(RefCell::new(self.opts)))
     }
 }

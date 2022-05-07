@@ -9,7 +9,7 @@ use embedded_hal::{blocking::spi::Transfer, digital::v2::OutputPin};
 #[cfg(feature = "rppal")]
 use _rppal::spi::Spi;
 
-/// Construct a [`ByteTransport`] from an SPI device, chip select pin
+/// Construct a [`Transport`] from an SPI device, chip select pin
 /// and [`Polarity`].
 pub struct Transport<SPI, CS> {
     spi: SPI,
