@@ -5,10 +5,10 @@ edition = "2021"
 
 [dependencies]
 embedded-hal = "0.2.7"
-_rppal = { package = "rppal", version = "0.13.1", features = ["hal"], optional = true }
+_rppal = { package = "rppal", version = "0.13.1", features = ["hal"] }
 
 [features]
 default = ["dev"]
-std = []
 dev = ["std"]
-rppal = ["dep:_rppal"]
+std = []
+rppal = []
