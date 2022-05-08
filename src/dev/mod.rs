@@ -38,8 +38,12 @@
 //!
 //! // Introduce a transfer error after 33 bytes:
 //! spi_control
-//!     .set_error(SpiError::Transfer)
+//!     .set_error(Error::Transfer)
 //!     .set_error_defer_bytes(33);
+//!
+//! // Or on the pin:
+//! cs_control
+//!     .set_error(PinError::SetHigh)
 //! ```
 
 #[macro_use]
@@ -51,5 +55,4 @@ pub mod spi;
 pub use {
     builder::{Intercept, Mock},
     output::mock::PinError,
-    spi::mock::SpiError,
 };

@@ -1,5 +1,4 @@
-use crate::transport::ByteTransport;
-use embedded_hal::blocking::spi::Transfer;
+use crate::Transfer;
 use std::{borrow::ToOwned, cell::RefCell, format, println, rc::Rc, string::String, vec::Vec};
 
 /// Intercepts [`Transfer<u8>`](Transfer), providing logging capabilities.
@@ -54,8 +53,6 @@ impl<S: Transfer<u8>> Transfer<u8> for Spi<S> {
         }
     }
 }
-
-impl<S: ByteTransport> ByteTransport for Spi<S> {}
 
 /// Options for constructing an SPI intercept.
 #[derive(Debug, Clone, Copy, Default)]

@@ -27,7 +27,7 @@
 //! ```
 mod transport;
 pub use embedded_hal::{blocking::spi::Transfer, digital::v2::OutputPin, spi::Polarity};
-pub use transport::{ByteTransport, ChipSelect, ClockSpeed, Error, Transport};
+pub use transport::{ChipSelect, ClockSpeed, Error, SpiDev, Transport};
 
 #[cfg(feature = "std")]
 extern crate std;

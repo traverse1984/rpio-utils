@@ -1,8 +1,5 @@
-use super::error::Error;
-use embedded_hal::blocking::spi::Transfer;
-
-/// Result where the Err is an SPI [`Error`].
-pub type Result<T = ()> = core::result::Result<T, Error>;
+use super::{Error, Result};
+use crate::Transfer;
 
 /// Indicates that the implementation of [`Transfer<u8>`](Transfer) for this
 /// struct:
@@ -10,35 +7,53 @@ pub type Result<T = ()> = core::result::Result<T, Error>;
 /// - Selects the chip at the start of transfer.
 /// - Deselects the chip at the end of successful transfer.
 /// - Uses the [`Error`] type.
-pub trait ByteTransport: Transfer<u8, Error = Error> {}
+pub trait SpiDev: Transfer<u8, Error = Error> {
+    /// Whether chip selection can be controlled
+    fn is_chip_select(&self) -> bool {
+        false
+    }
 
-/// Indicates that chip selection is controlled by a user-defined output pin.
-pub trait ChipSelect: ByteTransport {
+    /// Whether clock speed can be controlled
+    fn is_clock_speed(&self) -> bool {
+        false
+    }
+
     /// Select the chip.
     ///
     /// This typically drives the pin low, but in some configurations could
     /// drive the pin high.
-    fn select(&mut self) -> Result;
+    fn select(&mut self) -> Result {
+        Err(Error::NotImplemented)
+    }
 
     /// Deselect the chip.
     ///
     /// This typically drives the pin high, but in some configurations could
     /// drive the pin low.
-    fn deselect(&mut self) -> Result;
+    fn deselect(&mut self) -> Result {
+        Err(Error::NotImplemented)
+    }
 
     /// Exchange bytes with the chip without selecting or deslecting it.
-    fn exchange_bytes<'w>(&mut self, words: &'w mut [u8]) -> Result<&'w [u8]>;
+    fn raw_transfer<'w>(&mut self, words: &'w mut [u8]) -> Result<&'w [u8]> {
+        Err(Error::NotImplemented)
+    }
 
     /// Exchange bytes with the chip without selecting it. Deselect only if an
     /// error occurs during the transfer.
-    fn exchange_bytes_or_deselect<'w>(&mut self, words: &'w mut [u8]) -> Result<&'w [u8]> {
-        self.exchange_bytes(words)
+    fn raw_transfer_or_deselect<'w>(&mut self, words: &'w mut [u8]) -> Result<&'w [u8]> {
+        self.raw_transfer(words)
             .map_err(|err| self.deselect().map_or(Error::ChipDeselect, |_| err))
+    }
+
+    /// Set the SPI clock speed.
+    fn set_clock_speed(&mut self, speed: u32) -> Result {
+        Err(Error::NotImplemented)
     }
 }
 
+/// Indicates that chip selection is controlled by a user-defined output pin.
+pub trait ChipSelect: SpiDev {}
+
 /// Indicates that the SPI clock speed can be set during operation.
-pub trait ClockSpeed: ByteTransport {
-    /// Set the SPI clock speed.
-    fn set_clock_speed(&mut self, speed: u32) -> Result;
-}
+pub trait ClockSpeed: SpiDev {}

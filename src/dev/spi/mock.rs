@@ -1,5 +1,4 @@
 use super::intercept::{Spi, SpiOpts};
-use crate::transport::ByteTransport;
 use embedded_hal::blocking::spi::Transfer;
 use std::{
     borrow::ToOwned, boxed::Box, cell::RefCell, fmt, rc::Rc, string::String, thread,

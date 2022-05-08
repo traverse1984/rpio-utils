@@ -1,5 +1,5 @@
 use super::intercept::{Pin, PinOpts};
-use embedded_hal::digital::v2::OutputPin;
+use crate::OutputPin;
 use std::{borrow::ToOwned, cell::RefCell, rc::Rc, string::String, thread, time::Duration};
 
 /// State interface for mock output pin.
