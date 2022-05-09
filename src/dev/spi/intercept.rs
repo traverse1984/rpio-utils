@@ -1,4 +1,4 @@
-use crate::Transfer;
+use crate::{ChipSelect, ClockSpeed, SpiDev, Transfer};
 use std::{borrow::ToOwned, cell::RefCell, format, println, rc::Rc, string::String, vec::Vec};
 
 /// Intercepts [`Transfer<u8>`](Transfer), providing logging capabilities.
@@ -53,6 +53,42 @@ impl<S: Transfer<u8>> Transfer<u8> for Spi<S> {
         }
     }
 }
+
+impl<S: SpiDev> SpiDev for Spi<S> {
+    fn is_chip_select(&self) -> bool {
+        self.spi.is_chip_select()
+    }
+
+    fn select(&mut self) -> crate::transport::Result {
+        self.spi.select()
+    }
+
+    fn deselect(&mut self) -> crate::transport::Result {
+        self.spi.deselect()
+    }
+
+    fn raw_transfer<'w>(&mut self, words: &'w mut [u8]) -> crate::transport::Result<&'w [u8]> {
+        self.spi.raw_transfer(words)
+    }
+
+    fn raw_transfer_or_deselect<'w>(
+        &mut self,
+        words: &'w mut [u8],
+    ) -> crate::transport::Result<&'w [u8]> {
+        self.spi.raw_transfer_or_deselect(words)
+    }
+
+    fn is_clock_speed(&self) -> bool {
+        self.spi.is_clock_speed()
+    }
+
+    fn set_clock_speed(&mut self, speed: u32) -> crate::transport::Result {
+        self.spi.set_clock_speed(speed)
+    }
+}
+
+impl<S: ChipSelect> ChipSelect for Spi<S> {}
+impl<S: ClockSpeed> ClockSpeed for Spi<S> {}
 
 /// Options for constructing an SPI intercept.
 #[derive(Debug, Clone, Copy, Default)]
