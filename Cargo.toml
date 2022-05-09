@@ -6,9 +6,13 @@ edition = "2021"
 [dependencies]
 embedded-hal = "0.2.7"
 _rppal = { package = "rppal", version = "0.13.1", features = ["hal"] }
+rp2040-hal = { package = "rp2040-hal", version = "0.3.0" }
+embedded-time = { package = "embedded-time", version = "0.12.1" }
 
 [features]
-default = ["dev"]
+default = ["hal"]
+hal = []
+rp2040 = []
+rppal = ["std"]
 dev = ["std"]
 std = []
-rppal = []

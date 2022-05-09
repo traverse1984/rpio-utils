@@ -1,9 +1,20 @@
 mod error;
 mod traits;
 
+#[macro_use]
+pub mod common;
+
+#[derive(Debug, Default)]
+pub struct Transport;
+
+#[cfg(feature = "hal")]
 mod hal;
 
-pub struct Transport;
+#[cfg(feature = "rppal")]
+mod rppal;
+
+#[cfg(feature = "rp2040")]
+mod rp2040;
 
 pub use {
     error::{Error, Result},
